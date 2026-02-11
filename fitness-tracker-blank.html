@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Progress Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .train-icon {
+            width: 50px;
+            height: 50px;
+            background: #00a1de;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #333;
+        }
+
+        .weather {
+            margin-left: auto;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .instructions {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .instructions-header {
+            background: #00a1de;
+            color: white;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .instructions-header:hover {
+            background: #0088bb;
+        }
+
+        .instructions-toggle {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .instructions-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .instructions-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .instructions-content.open {
+            max-height: 1000px;
+        }
+
+        .instructions-inner {
+            padding: 2rem;
+        }
+
+        .instructions h2 {
+            color: #00a1de;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .instructions ul {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .instructions code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .customize-section {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .customize-header {
+            background: #522398;
+            color: white;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .customize-header:hover {
+            background: #441f7d;
+        }
+
+        .customize-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .customize-content.open {
+            max-height: 1000px;
+        }
+
+        .customize-inner {
+            padding: 2rem;
+        }
+
+        .cta-colors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-color-sample {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .color-option label {
+            font-weight: 500;
+            min-width: 100px;
+        }
+
+        .color-select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            flex: 1;
+        }
+
+        .milestone-form {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-top: 1.5rem;
+        }
+
+        .milestone-form h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .milestone-input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .milestone-input-group input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .milestone-list {
+            margin-top: 1rem;
+        }
+
+        .milestone-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .milestone-item-info {
+            flex: 1;
+        }
+
+        .line-map {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .line-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .line-container {
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+
+        .line-track {
+            display: flex;
+            align-items: center;
+            min-width: min-content;
+            padding: 1rem;
+        }
+
+        .station {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .station-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ddd;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #ddd;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .station-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .station-dot.completed {
+            background: var(--line-color, #00a1de);
+            box-shadow: 0 0 0 2px var(--line-color, #00a1de);
+        }
+
+        .station-dot.current {
+            width: 24px;
+            height: 24px;
+            animation: pulse-station 2s infinite;
+        }
+
+        @keyframes pulse-station {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .station-label {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            white-space: nowrap;
+            max-width: 120px;
+            line-height: 1.4;
+        }
+
+        .station-label.completed {
+            color: var(--line-color, #00a1de);
+            font-weight: 600;
+        }
+
+        .line-segment {
+            height: 4px;
+            background: #ddd;
+            flex: 1;
+            min-width: 80px;
+            margin: 0 -2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .line-segment.completed {
+            background: var(--line-color, #00a1de);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #333;
+        }
+
+        .update-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .goal-card {
+            background: #4a4a4a;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .goal-card:hover {
+            background: #5a5a5a;
+        }
+
+        .goal-name {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+
+        .stats-bar {
+            background: #3a3a3a;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .stat-icon {
+            width: 30px;
+            height: 30px;
+            background: #555;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .route-section {
+            margin-bottom: 2rem;
+        }
+
+        .route-header {
+            background: #2a2a2a;
+            color: white;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .progress-item {
+            background: #00a1de;
+            padding: 1.5rem;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            transition: opacity 0.3s;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .progress-item.cardio { background: var(--cardio-color, #00a1de); }
+        .progress-item.strength { background: var(--strength-color, #c60c30); }
+        .progress-item.flexibility { background: var(--flexibility-color, #522398); }
+        .progress-item.nutrition { background: var(--nutrition-color, #009b3a); }
+        .progress-item.recovery { background: var(--recovery-color, #f9461c); }
+        .progress-item.endurance { background: var(--endurance-color, #62361b); }
+
+        .progress-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .progress-type {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+
+        .progress-detail {
+            font-size: 1.5rem;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-time {
+            font-size: 2rem;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-indicator {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin-top: 0.8rem;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .add-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: #00a1de;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background 0.2s;
+            z-index: 100;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.1);
+            background: #0088bb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: #00a1de;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0088bb;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-danger {
+            background: #c60c30;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a00a26;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 3rem;
+            border-radius: 4px;
+            text-align: center;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            .goal-name {
+                font-size: 1.3rem;
+            }
+
+            .progress-detail {
+                font-size: 1.2rem;
+            }
+
+            .progress-time {
+                font-size: 1.5rem;
+            }
+
+            .stats-bar {
+                gap: 1rem;
+            }
+
+            .add-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .milestone-input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="train-icon">🚊</div>
+        <h1>Fitness Progress Tracker</h1>
+        <div class="weather" id="current-time">--:--</div>
+    </div>
+
+    <div class="container">
+        <!-- Collapsible Instructions -->
+        <div class="instructions">
+            <div class="instructions-header" onclick="toggleInstructions()">
+                <span>📋 How to Use This Fitness Tracker</span>
+                <span class="instructions-toggle" id="instructions-toggle">▼</span>
+            </div>
+            <div class="instructions-content" id="instructions-content">
+                <div class="instructions-inner">
+                    <ul>
+                        <li><strong>Add Activities:</strong> Click the blue <code>+</code> button in the bottom-right corner to add new fitness activities</li>
+                        <li><strong>Activity Types:</strong> Choose from 6 activity types, each with customizable CTA line colors</li>
+                        <li><strong>Customize Colors:</strong> Use the "Customize Categories" section to assign CTA line colors to each activity type</li>
+                        <li><strong>Create Milestones:</strong> Add milestones to the train-style progress map to track your journey</li>
+                        <li><strong>Track Progress:</strong> Today's activities appear with live countdown timers</li>
+                        <li><strong>Complete Activities:</strong> Mark activities as complete using the ✓ button</li>
+                        <li><strong>Weekly Goals:</strong> Track your weekly progress by activity type</li>
+                        <li><strong>Persistent Storage:</strong> All your data is saved automatically and persists between sessions</li>
+                        <li><strong>Mobile Responsive:</strong> Works seamlessly on phones, tablets, and desktop</li>
+                    </ul>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customize Categories Section -->
+        <div class="customize-section">
+            <div class="customize-header" onclick="toggleCustomize()">
+                <span>🎨 Customize Categories & Milestones</span>
+                <span class="instructions-toggle" id="customize-toggle">▼</span>
+            </div>
+            <div class="customize-content" id="customize-content">
+                <div class="customize-inner">
+                    <h3 style="margin-bottom: 1rem;">CTA Line Colors</h3>
+                    <div class="cta-colors">
+                        <div class="cta-color-sample" style="background: #00a1de;">
+                            <div class="color-dot" style="background: #00a1de;"></div>
+                            Blue Line
+                        </div>
+                        <div class="cta-color-sample" style="background: #c60c30;">
+                            <div class="color-dot" style="background: #c60c30;"></div>
+                            Red Line
+                        </div>
+                        <div class="cta-color-sample" style="background: #522398;">
+                            <div class="color-dot" style="background: #522398;"></div>
+                            Purple Line
+                        </div>
+                        <div class="cta-color-sample" style="background: #009b3a;">
+                            <div class="color-dot" style="background: #009b3a;"></div>
+                            Green Line
+                        </div>
+                        <div class="cta-color-sample" style="background: #f9461c;">
+                            <div class="color-dot" style="background: #f9461c;"></div>
+                            Orange Line
+                        </div>
+                        <div class="cta-color-sample" style="background: #62361b;">
+                            <div class="color-dot" style="background: #62361b;"></div>
+                            Brown Line
+                        </div>
+                        <div class="cta-color-sample" style="background: #f9e300; color: #333;">
+                            <div class="color-dot" style="background: #f9e300;"></div>
+                            Yellow Line
+                        </div>
+                        <div class="cta-color-sample" style="background: #ee97c9;">
+                            <div class="color-dot" style="background: #ee97c9;"></div>
+                            Pink Line
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 1rem;">Assign Colors to Activity Types</h3>
+                    <div class="color-grid">
+                        <div class="color-option">
+                            <label>Cardio:</label>
+                            <select class="color-select" id="color-cardio" onchange="updateColors()">
+                                <option value="#00a1de" selected>Blue Line</option>
+                                <option value="#c60c30">Red Line</option>
+                                <option value="#522398">Purple Line</option>
+                                <option value="#009b3a">Green Line</option>
+                                <option value="#f9461c">Orange Line</option>
+                                <option value="#62361b">Brown Line</option>
+                                <option value="#f9e300">Yellow Line</option>
+                                <option value="#ee97c9">Pink Line</option>
+                            </select>
+                        </div>
+                        <div class="color-option">
+                            <label>Strength:</label>
+                            <select class="color-select" id="color-strength" onchange="updateColors()">
+                                <option value="#00a1de">Blue Line</option>
+                                <option value="#c60c30" selected>Red Line</option>
+                                <option value="#522398">Purple Line</option>
+                                <option value="#009b3a">Green Line</option>
+                                <option value="#f9461c">Orange Line</option>
+                                <option value="#62361b">Brown Line</option>
+                                <option value="#f9e300">Yellow Line</option>
+                                <option value="#ee97c9">Pink Line</option>
+                            </select>
+                        </div>
+                        <div class="color-option">
+                            <label>Flexibility:</label>
+                            <select class="color-select" id="color-flexibility" onchange="updateColors()">
+                                <option value="#00a1de">Blue Line</option>
+                                <option value="#c60c30">Red Line</option>
+                                <option value="#522398" selected>Purple Line</option>
+                                <option value="#009b3a">Green Line</option>
+                                <option value="#f9461c">Orange Line</option>
+                                <option value="#62361b">Brown Line</option>
+                                <option value="#f9e300">Yellow Line</option>
+                                <option value="#ee97c9">Pink Line</option>
+                            </select>
+                        </div>
+                        <div class="color-option">
+                            <label>Nutrition:</label>
+                            <select class="color-select" id="color-nutrition" onchange="updateColors()">
+                                <option value="#00a1de">Blue Line</option>
+                                <option value="#c60c30">Red Line</option>
+                                <option value="#522398">Purple Line</option>
+                                <option value="#009b3a" selected>Green Line</option>
+                                <option value="#f9461c">Orange Line</option>
+                                <option value="#62361b">Brown Line</option>
+                                <option value="#f9e300">Yellow Line</option>
+                                <option value="#ee97c9">Pink Line</option>
+                            </select>
+                        </div>
+                        <div class="color-option">
+                            <label>Recovery:</label>
+                            <select class="color-select" id="color-recovery" onchange="updateColors()">
+                                <option value="#00a1de">Blue Line</option>
+                                <option value="#c60c30">Red Line</option>
+                                <option value="#522398">Purple Line</option>
+                                <option value="#009b3a">Green Line</option>
+                                <option value="#f9461c" selected>Orange Line</option>
+                                <option value="#62361b">Brown Line</option>
+                                <option value="#f9e300">Yellow Line</option>
+                                <option value="#ee97c9">Pink Line</option>
+                            </select>
+                        </div>
+                        <div class="color-option">
+                            <label>Endurance:</label>
+                            <select class="color-select" id="color-endurance" onchange="updateColors()">
+                                <option value="#00a1de">Blue Line</option>
+                                <option value="#c60c30">Red Line</option>
+                                <option value="#522398">Purple Line</option>
+                                <option value="#009b3a">Green Line</option>
+                                <option value="#f9461c">Orange Line</option>
+                                <option value="#62361b" selected>Brown Line</option>
+                                <option value="#f9e300">Yellow Line</option>
+                                <option value="#ee97c9">Pink Line</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="milestone-form">
+                        <h3>Create Your Progress Map</h3>
+                        <p style="margin-bottom: 1rem; color: #666;">Add milestones to visualize your fitness journey like a train route!</p>
+                        <div class="milestone-input-group">
+                            <input type="text" id="milestone-name" placeholder="Milestone name (e.g., 'First 5K')">
+                            <input type="text" id="milestone-value" placeholder="Goal (e.g., '5 lbs')">
+                            <button class="btn btn-primary btn-small" onclick="addMilestone()">Add</button>
+                        </div>
+                        <div class="milestone-list" id="milestone-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Train-Style Progress Map -->
+        <div class="line-map" id="line-map-section">
+            <div class="line-title">Your Fitness Journey</div>
+            <div class="line-container">
+                <div class="line-track" id="line-track">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🚂</div>
+                        <div>Add milestones above to see your progress map!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <div class="section-title">Your Fitness Goal</div>
+            <div class="update-time">Updated: <span id="update-time">--:--</span></div>
+        </div>
+
+        <div class="goal-card">
+            <div class="goal-name">Get Started</div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-icon">✓</div>
+                <div>
+                    <div class="stat-label">Completed</div>
+                    <div class="stat-value" id="completed-count">0</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">⚡</div>
+                <div>
+                    <div class="stat-label">Active</div>
+                    <div class="stat-value" id="active-count">0</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">📅</div>
+                <div>
+                    <div class="stat-label">Scheduled</div>
+                    <div class="stat-value" id="scheduled-count">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="route-section">
+            <div class="route-header">Today's Schedule</div>
+            <div id="today-activities">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🏃</div>
+                    <div>No activities scheduled for today. Click the + button to add your first activity!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="route-section">
+            <div class="route-header">This Week's Goals</div>
+            <div id="weekly-goals">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎯</div>
+                    <div>Start adding activities to track your weekly progress!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="add-btn" onclick="openAddModal()" title="Add Activity">+</button>
+
+    <!-- Add Activity Modal -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">Add New Activity</div>
+            <form id="addActivityForm" onsubmit="addActivity(event)">
+                <div class="form-group">
+                    <label>Activity Type</label>
+                    <select name="activity_type" required>
+                        <option value="cardio">Cardio</option>
+                        <option value="strength">Strength Training</option>
+                        <option value="flexibility">Flexibility</option>
+                        <option value="nutrition">Nutrition</option>
+                        <option value="recovery">Recovery</option>
+                        <option value="endurance">Endurance</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Activity Name</label>
+                    <input type="text" name="name" required placeholder="e.g., Morning Run, Yoga Session">
+                </div>
+                <div class="form-group">
+                    <label>Description (Optional)</label>
+                    <input type="text" name="description" placeholder="e.g., 5K run in the park">
+                </div>
+                <div class="form-group">
+                    <label>Scheduled Time</label>
+                    <input type="datetime-local" name="scheduled_time" required>
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" name="duration_minutes" value="30" min="1" max="480">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Add Activity</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Storage keys
+        const STORAGE_KEY = 'fitness-tracker-activities';
+        const COLORS_KEY = 'fitness-tracker-colors';
+        const MILESTONES_KEY = 'fitness-tracker-milestones';
+        
+        // Load data from storage
+        async function loadActivities() {
+            try {
+                const result = await window.storage.get(STORAGE_KEY);
+                return result ? JSON.parse(result.value) : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        async function loadColors() {
+            try {
+                const result = await window.storage.get(COLORS_KEY);
+                return result ? JSON.parse(result.value) : null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function loadMilestones() {
+            try {
+                const result = await window.storage.get(MILESTONES_KEY);
+                return result ? JSON.parse(result.value) : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        // Save data to storage
+        async function saveActivities(activities) {
+            try {
+                await window.storage.set(STORAGE_KEY, JSON.stringify(activities));
+                return true;
+            } catch (error) {
+                console.error('Error saving activities:', error);
+                return false;
+            }
+        }
+
+        async function saveColors(colors) {
+            try {
+                await window.storage.set(COLORS_KEY, JSON.stringify(colors));
+                return true;
+            } catch (error) {
+                console.error('Error saving colors:', error);
+                return false;
+            }
+        }
+
+        async function saveMilestones(milestones) {
+            try {
+                await window.storage.set(MILESTONES_KEY, JSON.stringify(milestones));
+                return true;
+            } catch (error) {
+                console.error('Error saving milestones:', error);
+                return false;
+            }
+        }
+
+        // Toggle functions
+        function toggleInstructions() {
+            const content = document.getElementById('instructions-content');
+            const toggle = document.getElementById('instructions-toggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        function toggleCustomize() {
+            const content = document.getElementById('customize-content');
+            const toggle = document.getElementById('customize-toggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        // Update colors
+        async function updateColors() {
+            const colors = {
+                cardio: document.getElementById('color-cardio').value,
+                strength: document.getElementById('color-strength').value,
+                flexibility: document.getElementById('color-flexibility').value,
+                nutrition: document.getElementById('color-nutrition').value,
+                recovery: document.getElementById('color-recovery').value,
+                endurance: document.getElementById('color-endurance').value
+            };
+            
+            document.documentElement.style.setProperty('--cardio-color', colors.cardio);
+            document.documentElement.style.setProperty('--strength-color', colors.strength);
+            document.documentElement.style.setProperty('--flexibility-color', colors.flexibility);
+            document.documentElement.style.setProperty('--nutrition-color', colors.nutrition);
+            document.documentElement.style.setProperty('--recovery-color', colors.recovery);
+            document.documentElement.style.setProperty('--endurance-color', colors.endurance);
+            
+            await saveColors(colors);
+        }
+
+        // Milestone functions
+        async function addMilestone() {
+            const name = document.getElementById('milestone-name').value.trim();
+            const value = document.getElementById('milestone-value').value.trim();
+            
+            if (!name) {
+                alert('Please enter a milestone name');
+                return;
+            }
+            
+            const milestones = await loadMilestones();
+            milestones.push({
+                id: generateId(),
+                name: name,
+                value: value || '',
+                completed: false,
+                order: milestones.length
+            });
+            
+            await saveMilestones(milestones);
+            document.getElementById('milestone-name').value = '';
+            document.getElementById('milestone-value').value = '';
+            
+            renderMilestones();
+        }
+
+        async function toggleMilestone(id) {
+            const milestones = await loadMilestones();
+            const milestone = milestones.find(m => m.id === id);
+            if (milestone) {
+                milestone.completed = !milestone.completed;
+                await saveMilestones(milestones);
+                renderMilestones();
+            }
+        }
+
+        async function deleteMilestone(id) {
+            if (confirm('Delete this milestone?')) {
+                const milestones = await loadMilestones();
+                const filtered = milestones.filter(m => m.id !== id);
+                await saveMilestones(filtered);
+                renderMilestones();
+            }
+        }
+
+        async function renderMilestones() {
+            const milestones = await loadMilestones();
+            const listContainer = document.getElementById('milestone-list');
+            const trackContainer = document.getElementById('line-track');
+            
+            // Render milestone list
+            if (milestones.length === 0) {
+                listContainer.innerHTML = '<p style="color: #999; margin-top: 1rem;">No milestones added yet</p>';
+            } else {
+                listContainer.innerHTML = milestones.map(m => `
+                    <div class="milestone-item">
+                        <div class="milestone-item-info">
+                            <strong>${m.name}</strong>
+                            ${m.value ? `<span style="color: #666;"> - ${m.value}</span>` : ''}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-small ${m.completed ? 'btn-secondary' : 'btn-primary'}" onclick="toggleMilestone('${m.id}')">
+                                ${m.completed ? '✓ Done' : 'Mark Complete'}
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="deleteMilestone('${m.id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Render train map
+            if (milestones.length === 0) {
+                trackContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🚂</div>
+                        <div>Add milestones above to see your progress map!</div>
+                    </div>
+                `;
+            } else {
+                const completedCount = milestones.filter(m => m.completed).length;
+                const lineColor = document.getElementById('color-cardio').value;
+                
+                trackContainer.innerHTML = milestones.map((m, index) => {
+                    const isCompleted = m.completed;
+                    const isCurrent = !m.completed && index === completedCount;
+                    const segmentCompleted = index < completedCount;
+                    
+                    return `
+                        <div class="station">
+                            <div class="station-dot ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}" 
+                                 onclick="toggleMilestone('${m.id}')"
+                                 style="${isCompleted || isCurrent ? `--line-color: ${lineColor}` : ''}">
+                            </div>
+                            <div class="station-label ${isCompleted ? 'completed' : ''}"
+                                 style="${isCompleted ? `color: ${lineColor}` : ''}">
+                                ${m.name}${m.value ? `<br>${m.value}` : ''}
+                            </div>
+                        </div>
+                        ${index < milestones.length - 1 ? `<div class="line-segment ${segmentCompleted ? 'completed' : ''}" style="${segmentCompleted ? `background: ${lineColor}` : ''}"></div>` : ''}
+                    `;
+                }).join('');
+            }
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Update current time display
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            }).toLowerCase();
+            document.getElementById('current-time').textContent = timeStr;
+            document.getElementById('update-time').textContent = timeStr;
+        }
+
+        // Calculate time until/remaining
+        function calculateTimeRemaining(scheduledTime) {
+            const now = new Date();
+            const scheduled = new Date(scheduledTime);
+            const diff = scheduled - now;
+            
+            if (diff < 0) return 'Due';
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hours > 0) {
+                return `${hours} hr ${minutes} min`;
+            } else {
+                return `${minutes} min`;
+            }
+        }
+
+        // Check if date is today
+        function isToday(date) {
+            const today = new Date();
+            const compareDate = new Date(date);
+            return compareDate.toDateString() === today.toDateString();
+        }
+
+        // Check if date is this week
+        function isThisWeek(date) {
+            const now = new Date();
+            const compareDate = new Date(date);
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            weekStart.setHours(0, 0, 0, 0);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 7);
+            return compareDate >= weekStart && compareDate < weekEnd;
+        }
+
+        // Render activities
+        async function renderActivities() {
+            const activities = await loadActivities();
+            const todayActivities = activities.filter(a => isToday(a.scheduled_time));
+            
+            // Update stats
+            const completed = todayActivities.filter(a => a.status === 'completed').length;
+            const active = todayActivities.filter(a => a.status === 'active').length;
+            const scheduled = todayActivities.filter(a => a.status === 'scheduled').length;
+            
+            document.getElementById('completed-count').textContent = completed;
+            document.getElementById('active-count').textContent = active;
+            document.getElementById('scheduled-count').textContent = scheduled;
+            
+            // Render today's activities
+            const todayContainer = document.getElementById('today-activities');
+            if (todayActivities.length === 0) {
+                todayContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏃</div>
+                        <div>No activities scheduled for today. Click the + button to add your first activity!</div>
+                    </div>
+                `;
+            } else {
+                todayContainer.innerHTML = todayActivities.map(activity => {
+                    const timeDisplay = activity.status === 'completed' ? '✓' : 
+                        activity.status === 'active' ? calculateTimeRemaining(activity.scheduled_time) :
+                        calculateTimeRemaining(activity.scheduled_time);
+                    
+                    return `
+                        <div class="progress-item ${activity.activity_type}">
+                            <div class="progress-info">
+                                <div class="progress-type">${activity.activity_type.charAt(0).toUpperCase() + activity.activity_type.slice(1)}</div>
+                                <div class="progress-detail">
+                                    ${activity.name}
+                                    ${activity.status === 'active' ? '<span class="live-indicator"></span>' : ''}
+                                </div>
+                            </div>
+                            <div class="progress-time">${timeDisplay}</div>
+                            <div class="action-buttons">
+                                ${activity.status !== 'completed' ? 
+                                    `<button class="action-btn" onclick="markComplete('${activity.id}')">✓ Complete</button>` : ''}
+                                <button class="action-btn" onclick="deleteActivity('${activity.id}')">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Render weekly goals
+            const weekActivities = activities.filter(a => isThisWeek(a.scheduled_time));
+            const weeklyGoals = {};
+            
+            ['cardio', 'strength', 'flexibility', 'nutrition', 'recovery', 'endurance'].forEach(type => {
+                const typeActivities = weekActivities.filter(a => a.activity_type === type);
+                const completed = typeActivities.filter(a => a.status === 'completed').length;
+                const total = typeActivities.length;
+                
+                if (total > 0) {
+                    weeklyGoals[type] = { completed, total, percentage: Math.round((completed / total) * 100) };
+                }
+            });
+            
+            const weeklyContainer = document.getElementById('weekly-goals');
+            if (Object.keys(weeklyGoals).length === 0) {
+                weeklyContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎯</div>
+                        <div>Start adding activities to track your weekly progress!</div>
+                    </div>
+                `;
+            } else {
+                weeklyContainer.innerHTML = Object.entries(weeklyGoals).map(([type, data]) => `
+                    <div class="progress-item ${type}">
+                        <div class="progress-info">
+                            <div class="progress-type">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                            <div class="progress-detail">${data.completed} of ${data.total} completed</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: ${data.percentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-time">${data.percentage}%</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Open add modal
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('active');
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.querySelector('input[name="scheduled_time"]').value = now.toISOString().slice(0, 16);
+        }
+
+        // Close add modal
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('active');
+            document.getElementById('addActivityForm').reset();
+        }
+
+        // Add activity
+        async function addActivity(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const activity = {
+                id: generateId(),
+                activity_type: formData.get('activity_type'),
+                name: formData.get('name'),
+                description: formData.get('description') || '',
+                scheduled_time: formData.get('scheduled_time'),
+                duration_minutes: parseInt(formData.get('duration_minutes')),
+                status: 'scheduled',
+                created_at: new Date().toISOString()
+            };
+            
+            const activities = await loadActivities();
+            activities.push(activity);
+            await saveActivities(activities);
+            
+            closeAddModal();
+            await renderActivities();
+        }
+
+        // Mark activity as complete
+        async function markComplete(id) {
+            const activities = await loadActivities();
+            const activity = activities.find(a => a.id === id);
+            if (activity) {
+                activity.status = 'completed';
+                await saveActivities(activities);
+                await renderActivities();
+            }
+        }
+
+        // Delete activity
+        async function deleteActivity(id) {
+            if (confirm('Are you sure you want to delete this activity?')) {
+                const activities = await loadActivities();
+                const filtered = activities.filter(a => a.id !== id);
+                await saveActivities(filtered);
+                await renderActivities();
+            }
+        }
+
+        // Clear all data
+        async function clearAllData() {
+            if (confirm('Are you sure you want to delete ALL activities, colors, and milestones? This cannot be undone.')) {
+                try {
+                    await window.storage.delete(STORAGE_KEY);
+                    await window.storage.delete(COLORS_KEY);
+                    await window.storage.delete(MILESTONES_KEY);
+                    location.reload();
+                } catch (error) {
+                    console.error('Error clearing data:', error);
+                }
+            }
+        }
+
+        // Update activity statuses
+        async function updateActivityStatuses() {
+            const activities = await loadActivities();
+            const now = new Date();
+            let updated = false;
+            
+            activities.forEach(activity => {
+                if (activity.status === 'scheduled') {
+                    const scheduledTime = new Date(activity.scheduled_time);
+                    const endTime = new Date(scheduledTime.getTime() + activity.duration_minutes * 60000);
+                    
+                    if (now >= scheduledTime && now < endTime) {
+                        activity.status = 'active';
+                        updated = true;
+                    }
+                }
+            });
+            
+            if (updated) {
+                await saveActivities(activities);
+                await renderActivities();
+            }
+        }
+
+        // Initialize
+        async function init() {
+            updateTime();
+            
+            // Load saved colors
+            const savedColors = await loadColors();
+            if (savedColors) {
+                document.getElementById('color-cardio').value = savedColors.cardio;
+                document.getElementById('color-strength').value = savedColors.strength;
+                document.getElementById('color-flexibility').value = savedColors.flexibility;
+                document.getElementById('color-nutrition').value = savedColors.nutrition;
+                document.getElementById('color-recovery').value = savedColors.recovery;
+                document.getElementById('color-endurance').value = savedColors.endurance;
+                await updateColors();
+            } else {
+                await updateColors();
+            }
+            
+            await renderActivities();
+            await renderMilestones();
+        }
+
+        init();
+        
+        // Update time every minute
+        setInterval(updateTime, 60000);
+        
+        // Update activity statuses every 30 seconds
+        setInterval(updateActivityStatuses, 30000);
+        
+        // Update time displays every minute
+        setInterval(renderActivities, 60000);
+    </script>
+</body>
+</html>
